@@ -1,0 +1,60 @@
+#!/usr/bin/bash
+#Shell Script to add all files, commit them with a commit message from user and then push to remote Github repo.
+echo "***Automating Git Add, commit and push***"
+
+#Ask for Username
+echo "Enter your github Username:"
+read "UserName"
+
+#Github Access personal token
+echo "Enter your github personal access token:"
+read "token"
+
+#Enter repository name
+echo "Enter repository name"
+read "repoName"
+
+#check if repository exists at github
+curl "https://api.github.com/repos/${UserName}/${repoName}.git"
+
+#if repo exists then
+
+if [ $? -eq 0 ]; then
+cd $repoName
+#Display unstaged files
+git status
+git remote set-url origin https://${token}@github.com/${UserName}/${repoName}.git
+#c
+
+#commit unstaged files
+
+if ["$(git status --porcelain)"]; then
+echo "There are uncommited and unstaged files. commit them before pushing"
+echo "Enter commit message"
+read "commitMessage"
+git add .
+git commit -m "$commitMessage"
+git push
+
+echo "Files pushed to github"
+#else push all commited and staged files to remote repo
+
+else
+git push
+echo "files pushed to github"
+
+fi
+#If there are no files to commit, stage or push
+
+if ["$(git status --porcelain)"]; then
+echo "there are no files to commit, stage or push"
+
+fi
+
+else
+echo "Repository does not exist"
+
+fi
+
+
+#End of Script
